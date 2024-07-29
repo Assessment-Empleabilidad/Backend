@@ -1,5 +1,6 @@
 using Backend.Data;
 using Microsoft.EntityFrameworkCore;
+using Backend.Services.Mailersend;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,13 +8,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 builder.Services.AddControllers();
+builder.Services.AddHttpClient();
 
 builder.Services.AddDbContext<BaseContext> (options => 
                             options.UseMySql(
                                 builder.Configuration.GetConnectionString("MySqlConnection"),
                                 Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.20-mysql")));
+
+builder.Services.AddScoped<IMailersendServices, MailersendServices>();
 
 var app = builder.Build();
 
