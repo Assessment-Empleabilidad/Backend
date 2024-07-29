@@ -3,6 +3,7 @@ using Backend.Data;
 using Backend.Services.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Backend.Services.Mailersend;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +30,7 @@ builder.Services.AddDbContext<BaseContext>(options =>
         Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.20-mysql")));
 
 
-
+builder.Services.AddScoped<IMailersendServices, MailersendServices>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
