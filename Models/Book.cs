@@ -1,3 +1,5 @@
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
 namespace Backend.Models
 {
     public class Book  
@@ -6,7 +8,7 @@ namespace Backend.Models
         public string Title { get; set; }
         public string Author { get; set; }
         public string Genre { get; set; }
-        public date PublicationDate { get; set; }
+        public Date PublicationDate { get; set; }
         public int CopiesAvailable { get; set; }
         public string Status { get; set; }
     }
