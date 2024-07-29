@@ -12,5 +12,6 @@ namespace Backend.Models
         public DateTime DateCreate { get; set; }
         [JsonIgnore]
         public List<Loan>Loans { get; set; }
+
     }
 }
