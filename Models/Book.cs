@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Backend.Models
@@ -11,5 +12,7 @@ namespace Backend.Models
         public DateTime PublicationDate { get; set; }
         public int CopiesAvailable { get; set; }
         public string Status { get; set; }
+        [JsonIgnore]
+        public List<Loan>Loans { get; set; }
     }
 }
