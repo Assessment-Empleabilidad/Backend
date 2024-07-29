@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "/home/riwip5-027/Documents/Juan Pablo 4A/Filtro final/Proyecto/Backend/Backend.csproj": {}
+    "C:\\Users\\galle\\OneDrive\\Escritorio\\Backend\\Backend.csproj": {}
   },
   "projects": {
-    "/home/riwip5-027/Documents/Juan Pablo 4A/Filtro final/Proyecto/Backend/Backend.csproj": {
+    "C:\\Users\\galle\\OneDrive\\Escritorio\\Backend\\Backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/riwip5-027/Documents/Juan Pablo 4A/Filtro final/Proyecto/Backend/Backend.csproj",
+        "projectUniqueName": "C:\\Users\\galle\\OneDrive\\Escritorio\\Backend\\Backend.csproj",
         "projectName": "Backend",
-        "projectPath": "/home/riwip5-027/Documents/Juan Pablo 4A/Filtro final/Proyecto/Backend/Backend.csproj",
-        "packagesPath": "/home/riwip5-027/.nuget/packages/",
-        "outputPath": "/home/riwip5-027/Documents/Juan Pablo 4A/Filtro final/Proyecto/Backend/obj/",
+        "projectPath": "C:\\Users\\galle\\OneDrive\\Escritorio\\Backend\\Backend.csproj",
+        "packagesPath": "C:\\Users\\galle\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\galle\\OneDrive\\Escritorio\\Backend\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/riwip5-027/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\galle\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -32,12 +38,25 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.3, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.7, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.1, )"
@@ -53,6 +72,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.0.1, )"
             }
           },
           "imports": [
@@ -74,7 +97,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.107/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.206/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
