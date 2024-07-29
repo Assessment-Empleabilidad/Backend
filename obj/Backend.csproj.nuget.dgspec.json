@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/santiago/Desktop/Backend/Backend.csproj": {}
+    "/home/riwip5-027/Documents/Juan Pablo 4A/Filtro final/Proyecto/Backend/Backend.csproj": {}
   },
   "projects": {
-    "/Users/santiago/Desktop/Backend/Backend.csproj": {
+    "/home/riwip5-027/Documents/Juan Pablo 4A/Filtro final/Proyecto/Backend/Backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/santiago/Desktop/Backend/Backend.csproj",
+        "projectUniqueName": "/home/riwip5-027/Documents/Juan Pablo 4A/Filtro final/Proyecto/Backend/Backend.csproj",
         "projectName": "Backend",
-        "projectPath": "/Users/santiago/Desktop/Backend/Backend.csproj",
-        "packagesPath": "/Users/santiago/.nuget/packages/",
-        "outputPath": "/Users/santiago/Desktop/Backend/obj/",
+        "projectPath": "/home/riwip5-027/Documents/Juan Pablo 4A/Filtro final/Proyecto/Backend/Backend.csproj",
+        "packagesPath": "/home/riwip5-027/.nuget/packages/",
+        "outputPath": "/home/riwip5-027/Documents/Juan Pablo 4A/Filtro final/Proyecto/Backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/santiago/.nuget/NuGet/NuGet.Config"
+          "/home/riwip5-027/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -74,7 +74,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.107/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
