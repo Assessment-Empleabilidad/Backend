@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Backend.Models
 {
     public class User  
@@ -8,5 +10,7 @@ namespace Backend.Models
         public string Password { get; set; }
         public string Role { get; set; }
         public DateTime DataCreate { get; set; }
+        [JsonIgnore]
+        public List<Loan>Loans { get; set; }
     }
 }
