@@ -13,6 +13,6 @@ namespace Backend.Models
         public int CopiesAvailable { get; set; }
         public string Status { get; set; }
         [JsonIgnore]
-        public List<Loan>Loans { get; set; }
+        public List<Loan> Loans { get; set; }
     }
 }
