@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Text.Json.Serialization;
+using Backend.Services.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +31,8 @@ builder.Services.AddDbContext<BaseContext>(options =>
         Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.20-mysql")));
 
 builder.Services.AddScoped<IBookRepository, BookRepository>();
-
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IMailersendServices, MailersendServices>();
 
 var app = builder.Build();
 
