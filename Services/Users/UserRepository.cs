@@ -19,7 +19,6 @@ namespace Backend.Services.Users
     {
         private readonly BaseContext _context;
         private readonly IConfiguration _configuration;
-
         private readonly IMailersendServices _mailersendServices;
 
         public UserRepository(BaseContext context, IConfiguration configuration, IMailersendServices mailersendServices)
