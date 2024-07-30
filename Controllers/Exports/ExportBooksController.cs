@@ -17,7 +17,7 @@ namespace BackEnd.Controllers
 
         [HttpGet]
         [Route("api/export/books/pdf")]
-        public IActionResult ExportPDF(int id)
+        public IActionResult ExportPDF()
         {
             MemoryStream workStream = new MemoryStream();
             Document document = new Document();
@@ -32,6 +32,11 @@ namespace BackEnd.Controllers
             var boldFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, Font.NORMAL, BaseColor.WHITE);
 
             var books = _context.Books.ToList();
+
+            if (books == null || books.Count == 0)
+            {
+                return NotFound("No se encontraron libros");
+            }
 
             Paragraph title = new Paragraph("Libros", titleFont)
             {
@@ -58,7 +63,7 @@ namespace BackEnd.Controllers
                 table.AddCell(book.Title);
                 table.AddCell(book.Author);
                 table.AddCell(book.Genre);
-                table.AddCell(book.PublicationDate.ToString());
+                table.AddCell(book.PublicationDate.ToString("yyyy/MM/dd"));
                 table.AddCell(book.Status);
             }
 
@@ -81,6 +86,11 @@ namespace BackEnd.Controllers
         {
             var libros = await _context.Books.ToListAsync();
 
+            if (libros == null || libros.Count == 0)
+            {
+                return NotFound("No se encontraron libros");
+            }
+
             using (var package = new ExcelPackage())
             {
                 var worksheet = package.Workbook.Worksheets.Add("Libros");
@@ -102,7 +112,7 @@ namespace BackEnd.Controllers
                     worksheet.Cells[i + 2, 2].Value = libro.Title;
                     worksheet.Cells[i + 2, 3].Value = libro.Author;
                     worksheet.Cells[i + 2, 4].Value = libro.Genre;
-                    worksheet.Cells[i + 2, 5].Value = libro.PublicationDate.ToString("yyyy-MM-dd");
+                    worksheet.Cells[i + 2, 5].Value = libro.PublicationDate.ToString("yyyy/MM/dd");
                     worksheet.Cells[i + 2, 6].Value = libro.CopiesAvailable;
                     worksheet.Cells[i + 2, 7].Value = libro.Status;
                 }
