@@ -12,38 +12,38 @@ using Backend.Services.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddHttpClient();
+// Agregar servicios al contenedor.
+// Aprende más sobre la configuración de Swagger/OpenAPI en https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer(); // Añade soporte para exploración y documentación de API con Swagger.
+builder.Services.AddSwaggerGen(); // Registra el generador de Swagger para la documentación de la API.
+builder.Services.AddHttpClient(); // Añade soporte para servicios de cliente HTTP.
 
-// Add controllers and configure JSON options
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+        // Configura las opciones de JSON para la aplicación.
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; // Habilita el manejo de referencias para preservar las referencias de objeto en la serialización JSON.
     });
 
+// Configura el DbContext para la conexión con la base de datos MySQL.
 builder.Services.AddDbContext<BaseContext>(options =>
     options.UseMySql(
-        builder.Configuration.GetConnectionString("MySqlConnection"),
-        Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.20-mysql")));
+        builder.Configuration.GetConnectionString("MySqlConnection"), // Recupera la cadena de conexión desde la configuración.
+        Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.20-mysql"))); // Especifica la versión del servidor para MySQL.
 
-builder.Services.AddScoped<IBookRepository, BookRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IMailersendServices, MailersendServices>();
+builder.Services.AddScoped<IBookRepository, BookRepository>(); // Registra BookRepository para la inyección de dependencias.
+builder.Services.AddScoped<IUserRepository, UserRepository>(); // Registra UserRepository para la inyección de dependencias.
+builder.Services.AddScoped<IMailersendServices, MailersendServices>(); // Registra MailersendServices para la inyección de dependencias.
 
-var app = builder.Build();
+var app = builder.Build(); // Construye la aplicación.
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger(); // Habilita Swagger en el entorno de desarrollo.
+    app.UseSwaggerUI(); // Configura la interfaz de usuario de Swagger para la documentación de la API.
 }
 
-app.UseHttpsRedirection();
-app.MapControllers();
+app.UseHttpsRedirection(); // Fuerza la redirección a HTTPS.
+app.MapControllers(); // Mapea los endpoints de los controladores.
 
-app.Run();
+app.Run(); // Ejecuta la aplicación.
