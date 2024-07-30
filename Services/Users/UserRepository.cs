@@ -11,6 +11,7 @@ using Backend.Helper;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Backend.Services.Mailersend;
 
 namespace Backend.Services.Users
 {
@@ -19,11 +20,13 @@ namespace Backend.Services.Users
         private readonly BaseContext _context;
         private readonly IConfiguration _configuration;
 
+        private readonly IMailersendServices _mailersendServices;
 
-        public UserRepository(BaseContext context, IConfiguration configuration)
+        public UserRepository(BaseContext context, IConfiguration configuration, IMailersendServices mailersendServices)
         {
             _context = context;
             _configuration = configuration;
+            _mailersendServices = mailersendServices;
 
         }
         public async Task<User> AuthenticateUser(string email, string password)
@@ -66,6 +69,7 @@ namespace Backend.Services.Users
                     DateCreate = DateTime.Now
                 };
                 _context.Users.Add(newUser);
+                _mailersendServices.SendMail(user.Email, user.Name);
                 await _context.SaveChangesAsync();
                 return newUser;
             }
