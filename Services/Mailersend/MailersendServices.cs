@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Backend.Services.Mailersend
 {
-    public class MailersendServices : IMailersendServices
+    public class MailersendServices : IMailersendServices // Define la clase MailersendServices que implementa la interfaz IMailersendServices.
     {
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient; // Declara una variable privada para manejar las solicitudes HTTP.
         public MailersendServices(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _httpClient.Timeout = TimeSpan.FromSeconds(100); 
+            _httpClient.Timeout = TimeSpan.FromSeconds(100); // Establece el tiempo de espera para las solicitudes HTTP a 100 segundos.
         }
 
         //Correo de registro    
@@ -21,7 +21,7 @@ namespace Backend.Services.Mailersend
             Console.WriteLine("SendMail");
             try
             {
-                var requestBody = new
+                var requestBody = new // Crea el cuerpo de la solicitud con los detalles del correo.
                 {
                     from = new
                     {
@@ -49,15 +49,15 @@ namespace Backend.Services.Mailersend
                     template_id = "0p7kx4xxxp849yjr"
                 };
 
-                var body = System.Text.Json.JsonSerializer.Serialize(requestBody);
+                var body = System.Text.Json.JsonSerializer.Serialize(requestBody); // Serializa el cuerpo de la solicitud en formato JSON.
 
-                var request = new HttpRequestMessage(HttpMethod.Post, "https://api.mailersend.com/v1/email")
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://api.mailersend.com/v1/email")  // Crea la solicitud HTTP POST con el cuerpo JSON serializado.
                 {
-                    Content = new StringContent(body, Encoding.UTF8, "application/json")
+                    Content = new StringContent(body, Encoding.UTF8, "application/json") // Establece el contenido de la solicitud con el cuerpo JSON y el tipo de contenido.
                 };
-
+                // Agrega el encabezado de autorización con el token de API de Mailersend.
                 request.Headers.Add("Authorization", $"Bearer mlsn.db7d2ba06e95530684bc64935056ef4c9768ed64e0aee9e8f2b25f2f85907320");
-                HttpResponseMessage response = _httpClient.Send(request);
+                HttpResponseMessage response = _httpClient.Send(request); // Envía la solicitud HTTP y obtiene la respuesta.
             }
             catch (HttpRequestException e)
             {
