@@ -4,6 +4,8 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace BackEnd.Controllers
 {
@@ -15,13 +17,22 @@ namespace BackEnd.Controllers
             _context = context;
         }
 
-        [HttpGet]
-        [Route("api/export/books/pdf")]
-        public IActionResult ExportPDF(int id)
-        {
-            MemoryStream workStream = new MemoryStream();
-            Document document = new Document();
+    [HttpGet]
+    [Route("api/export/books/pdf")]
+    [Authorize]
+    public IActionResult ExportPDF()
+    {
+        
+        var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 
+        if (userRole == null || userRole != "Admin")
+        {
+            return Unauthorized("Only admins can download the book list.");
+        }
+
+        using (MemoryStream workStream = new MemoryStream())
+        {
+            Document document = new Document();
             PdfWriter writer = PdfWriter.GetInstance(document, workStream);
             writer.CloseStream = false;
 
@@ -63,26 +74,33 @@ namespace BackEnd.Controllers
             }
 
             document.Add(table);
+            document.Close(); // Cierra el documento
 
-            document.Close();
-
-            // CONFIG PDF RESULT
-            byte[] byteInfo = workStream.ToArray();
-            workStream.Write(byteInfo, 0, byteInfo.Length);
+            // Posiciona el MemoryStream al inicio
             workStream.Position = 0;
 
-            var fileName = $"Historial de libros";
-            return File(workStream, "application/pdf", fileName);
+            var fileName = "Historial_de_libros.pdf";
+            return File(workStream.ToArray(), "application/pdf", fileName);    
+            }
         }
-
+        
         [HttpGet]
         [Route("book/export")]
+        [Authorize]
         public async Task<IActionResult> ExportToExcel()
         {
-            var libros = await _context.Books.ToListAsync();
+            var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 
-            using (var package = new ExcelPackage())
+            if (userRole == null || userRole != "Admin")
             {
+                return Unauthorized("Only admins can download the book list.");
+            }
+            else
+            {
+                var libros = await _context.Books.ToListAsync();
+
+                using (var package = new ExcelPackage())
+                {
                 var worksheet = package.Workbook.Worksheets.Add("Libros");
 
                 // Agregar encabezados
@@ -112,7 +130,9 @@ namespace BackEnd.Controllers
                 stream.Position = 0;
 
                 return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Libro.xlsx");
+                }
             }
+            
         }
     }
 }

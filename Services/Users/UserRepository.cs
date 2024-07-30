@@ -30,14 +30,14 @@ namespace Backend.Services.Users
         }
         public async Task<User> AuthenticateUser(string email, string password)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u=>u.Email == email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user != null)
             {
                 var passCompare = new EncrypPass();
                 var auth = passCompare.VerifyPassword(user.Password, password);
                 if (auth)
                 {
-                   return user;
+                    return user;
                 }
             }
             return null;
@@ -63,8 +63,8 @@ namespace Backend.Services.Users
                 {
                     Name = user.Name,
                     Email = user.Email,
-                    Password =  user.Password,
-                    Role = "User",
+                    Password = user.Password,
+                    Role = user.Role,
                     DateCreate = DateTime.Now
                 };
                 _context.Users.Add(newUser);
@@ -81,20 +81,16 @@ namespace Backend.Services.Users
 
         public string GenerateAuthToken(User user)
         {
-             // Set up security credentials
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            // Define token claims
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Role),
+                new Claim(ClaimTypes.Role, user.Role), 
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 
-            
-            // Configure the JWT token
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Issuer"],
@@ -103,8 +99,8 @@ namespace Backend.Services.Users
                 signingCredentials: credentials
             );
 
-            // Return the JWT token as a string
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
     }
 }

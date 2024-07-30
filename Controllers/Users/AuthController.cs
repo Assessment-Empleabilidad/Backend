@@ -26,7 +26,7 @@ namespace Backend.Controllers.Users
                     return StatusCode(400, new { Message = "User or password incorrect", StatusCode = 400});
                 }
                 var token = _userService.GenerateAuthToken(user);
-                return StatusCode(200, new { Message = "Access valid", Token = token, DateTime.UtcNow, StatusCode = 200 });
+                return StatusCode(200, new { Message = "Access valid", Token = token, DateTime.UtcNow, Rol = user.Role, StatusCode = 200 });
             }
             catch (Exception ex)
             {

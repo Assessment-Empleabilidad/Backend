@@ -18,6 +18,10 @@ namespace BackEnd.Controllers
         [Route("api/{id}/export/historybooks/pdf")]
         public IActionResult ExportPDF(int id)
         {
+            var user = _context.Users.Find(id);
+            if (user == null)
+                return NotFound("User not found.");
+
             MemoryStream workStream = new MemoryStream();
             Document document = new Document();
 
@@ -29,8 +33,6 @@ namespace BackEnd.Controllers
             // TH
             var titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 20, Font.NORMAL, BaseColor.BLACK);
             var boldFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, Font.NORMAL, BaseColor.WHITE);
-
-            var user = _context.Users.Find(id);
 
             var loans = _context.Loans.Include(b => b.Book).Where(l => l.UserId == id);
 
