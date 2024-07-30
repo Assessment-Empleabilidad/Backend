@@ -7,26 +7,24 @@ namespace Backend.Controllers.Exports
 {
     public class ExportClientsController : ControllerBase
     {
-        private readonly BaseContext _context;
+        private readonly BaseContext _context;  // Define el contexto de base de datos
+
+        // Constructor que inicializa el contexto de la base de datos
         public ExportClientsController(BaseContext context)
         {
             _context = context;
         }
 
+        // Acción para exportar clientes a un archivo Excel
         [HttpGet]
         [Route("clients/export")]
         public async Task<IActionResult> ExportToExcel()
         {
-            var users = await _context.Users.Where(s=>s.Role=="User").ToListAsync();
-
-            if (users == null || users.Count == 0)
-            {
-                return NotFound("No se encontraron clientes");
-            }
+            var users = await _context.Users.Where(s => s.Role == "User").ToListAsync();  // Obtiene la lista de usuarios con rol "User"
 
             using (var package = new ExcelPackage())
             {
-                var worksheet = package.Workbook.Worksheets.Add("Libros");
+                var worksheet = package.Workbook.Worksheets.Add("Clientes");  // Crea una nueva hoja de cálculo
 
                 // Agregar encabezados
                 worksheet.Cells[1, 1].Value = "Id";
@@ -39,18 +37,18 @@ namespace Backend.Controllers.Exports
                 for (int i = 0; i < users.Count; i++)
                 {
                     var user = users[i];
-                    worksheet.Cells[i + 2, 1].Value = user.Id;
-                    worksheet.Cells[i + 2, 2].Value = user.Name;
-                    worksheet.Cells[i + 2, 3].Value = user.Email;
-                    worksheet.Cells[i + 2, 4].Value = user.Role;
-                    worksheet.Cells[i + 2, 5].Value = user.DateCreate.ToString("yyyy/MM/dd");
+                    worksheet.Cells[i + 2, 1].Value = user.Id;  // Agrega el Id del usuario
+                    worksheet.Cells[i + 2, 2].Value = user.Name;  // Agrega el Nombre del usuario
+                    worksheet.Cells[i + 2, 3].Value = user.Email;  // Agrega el Correo del usuario
+                    worksheet.Cells[i + 2, 4].Value = user.Role;  // Agrega el Rol del usuario
+                    worksheet.Cells[i + 2, 5].Value = user.DateCreate.ToString("yyyy-MM-dd");  // Agrega la Fecha de registro del usuario
                 }
 
                 var stream = new MemoryStream();
-                package.SaveAs(stream);
+                package.SaveAs(stream);  // Guarda el paquete de Excel en el flujo de memoria
                 stream.Position = 0;
 
-                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Clientes.xlsx");
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Clientes.xlsx");  // Retorna el archivo Excel
             }
         }
     }
