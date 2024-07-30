@@ -13,11 +13,16 @@ namespace Backend.Controllers.Exports
             _context = context;
         }
 
-         [HttpGet]
+        [HttpGet]
         [Route("clients/export")]
         public async Task<IActionResult> ExportToExcel()
         {
             var users = await _context.Users.Where(s=>s.Role=="User").ToListAsync();
+
+            if (users == null || users.Count == 0)
+            {
+                return NotFound("No se encontraron clientes");
+            }
 
             using (var package = new ExcelPackage())
             {
@@ -38,7 +43,7 @@ namespace Backend.Controllers.Exports
                     worksheet.Cells[i + 2, 2].Value = user.Name;
                     worksheet.Cells[i + 2, 3].Value = user.Email;
                     worksheet.Cells[i + 2, 4].Value = user.Role;
-                    worksheet.Cells[i + 2, 5].Value = user.DateCreate.ToString("yyyy-MM-dd");
+                    worksheet.Cells[i + 2, 5].Value = user.DateCreate.ToString("yyyy/MM/dd");
                 }
 
                 var stream = new MemoryStream();

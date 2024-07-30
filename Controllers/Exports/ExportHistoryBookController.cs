@@ -33,7 +33,17 @@ namespace BackEnd.Controllers
 
             var user = _context.Users.Find(id);
 
+            if (user == null)
+            {
+                return NotFound($"Usuario con id {id} no encontrado");
+            }
+
             var loans = _context.Loans.Include(b => b.Book).Where(l => l.UserId == id);
+
+            if (loans == null || loans.Count() == 0)
+            {
+                return NotFound($"No se encontraron prestamos del usuario {user.Name} con id {id}");
+            }
 
             Paragraph title = new Paragraph("Historial de libros", titleFont)
             {
@@ -59,9 +69,9 @@ namespace BackEnd.Controllers
                 table.AddCell(loan.Id.ToString());
                 table.AddCell(loan.Book.Title);
                 table.AddCell(loan.Book.Status);
-                table.AddCell(loan.CreationDate.ToString());
-                table.AddCell(loan.LoanDate.ToString());
-                table.AddCell(loan.ReturnDate.ToString());
+                table.AddCell(loan.CreationDate.ToString("yyyy/MM/dd"));
+                table.AddCell(loan.LoanDate.ToString("yyyy/MM/dd"));
+                table.AddCell(loan.ReturnDate.ToString("yyyy/MM/dd"));
             }
 
             document.Add(table);
