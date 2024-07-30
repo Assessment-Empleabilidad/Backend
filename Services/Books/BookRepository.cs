@@ -1,4 +1,5 @@
 
+using System.Security.Claims;
 using Backend.Data;
 using Backend.Models;
 
@@ -15,30 +16,40 @@ namespace Backend.Services.Books
             _context = context;
         }
 
-        // Agrega un nuevo libro a la base de datos
-        public void Add(Book book)
+        public void Add(Book book, string userRole)
         {
-            _context.Books.Add(book); // Añade el libro a la colección de Books
-            _context.SaveChanges(); // Guarda los cambios en la base de datos
+            if (userRole != "Admin")
+            {
+                throw new UnauthorizedAccessException("Only administrators can add books.");
+            }
+
+            _context.Books.Add(book);
+            _context.SaveChanges();
         }
 
-        // Elimina un libro de la base de datos por su ID (cambia el estado a "Active" en lugar de eliminar)
-        public void Delete(int id)
+        public void Delete(int id, string UserRole)
         {
-            var book = _context.Books.Find(id); // Busca el libro por su ID
+            if (UserRole != "Admin")
+            {
+                throw new UnauthorizedAccessException("Only administrators can delete books.");
+            }
+            var book = _context.Books.Find(id);
             if (book != null)
             {
-                book.Status = "Active"; // Cambia el estado del libro a "Active" en lugar de eliminarlo
-                _context.Books.Update(book); // Actualiza el libro en la base de datos
-                _context.SaveChanges(); // Guarda los cambios en la base de datos
+                book.Status = "Inactive";
+                _context.Books.Update(book);
+                _context.SaveChanges();
             }
         }
 
-        // Obtiene todos los libros de la base de datos
-        public IEnumerable<Book> GetAll()
+        public IEnumerable<Book> GetAll(string UserRole)
         {
-            var books = _context.Books.ToList(); // Obtiene la lista de todos los libros
-            return books; // Retorna la lista de libros
+            if (UserRole != "Admin")
+            {
+                throw new UnauthorizedAccessException("Only administrators obtain books.");
+            }
+            var books = _context.Books.ToList();
+            return books;
         }
 
         // Obtiene un libro específico por su ID
@@ -48,11 +59,14 @@ namespace Backend.Services.Books
             return book; // Retorna el libro encontrado o null si no existe
         }
 
-        // Actualiza un libro existente en la base de datos
-        public void Update(Book book)
+        public void Update(Book book, string UserRole)
         {
-            _context.Books.Update(book); // Actualiza el libro en la base de datos
-            _context.SaveChanges(); // Guarda los cambios en la base de datos
+            if (UserRole != "Admin")
+            {
+                throw new UnauthorizedAccessException("Only administrators can update books.");
+            }
+            _context.Books.Update(book);
+            _context.SaveChanges();
         }
     }
 }

@@ -4,6 +4,8 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace BackEnd.Controllers
 {
@@ -17,14 +19,22 @@ namespace BackEnd.Controllers
             _context = context;
         }
 
-        // Acción para exportar libros a un archivo PDF
-        [HttpGet]
-        [Route("api/export/books/pdf")]
-        public IActionResult ExportPDF()
-        {
-            MemoryStream workStream = new MemoryStream();  // Crea un flujo de memoria
-            Document document = new Document();  // Crea un nuevo documento PDF
+    [HttpGet]
+    [Route("api/export/books/pdf")]
+    [Authorize]
+    public IActionResult ExportPDF()
+    {
+        
+        var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 
+        if (userRole == null || userRole != "Admin")
+        {
+            return Unauthorized("Only admins can download the book list.");
+        }
+
+        using (MemoryStream workStream = new MemoryStream())
+        {
+            Document document = new Document();
             PdfWriter writer = PdfWriter.GetInstance(document, workStream);
             writer.CloseStream = false;  // No cerrar el flujo al cerrar el documento
 
@@ -73,34 +83,35 @@ namespace BackEnd.Controllers
                 table.AddCell(book.Status);
             }
 
-            document.Add(table);  // Agrega la tabla al documento
+            document.Add(table);
+            document.Close(); // Cierra el documento
 
-            document.Close();  // Cierra el documento
-
-            // Configuración del resultado PDF
-            byte[] byteInfo = workStream.ToArray();
-            workStream.Write(byteInfo, 0, byteInfo.Length);
+            // Posiciona el MemoryStream al inicio
             workStream.Position = 0;
 
-            var fileName = $"Historial de libros";
-            return File(workStream, "application/pdf", fileName);  // Retorna el archivo PDF
+            var fileName = "Historial_de_libros.pdf";
+            return File(workStream.ToArray(), "application/pdf", fileName);    
+            }
         }
-
-        // Acción para exportar libros a un archivo Excel
+        
         [HttpGet]
         [Route("book/export")]
+        [Authorize]
         public async Task<IActionResult> ExportToExcel()
         {
-            var libros = await _context.Books.ToListAsync();
+            var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 
-            if (libros == null || libros.Count == 0)
+            if (userRole == null || userRole != "Admin")
             {
-                return NotFound("No se encontraron libros");
+                return Unauthorized("Only admins can download the book list.");
             }
-
-            using (var package = new ExcelPackage())
+            else
             {
-                var worksheet = package.Workbook.Worksheets.Add("Libros");  // Crea una nueva hoja de cálculo
+                var libros = await _context.Books.ToListAsync();
+
+                using (var package = new ExcelPackage())
+                {
+                var worksheet = package.Workbook.Worksheets.Add("Libros");
 
                 // Agregar encabezados
                 worksheet.Cells[1, 1].Value = "Id";
@@ -128,8 +139,10 @@ namespace BackEnd.Controllers
                 package.SaveAs(stream);  // Guarda el paquete de Excel en el flujo de memoria
                 stream.Position = 0;
 
-                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Libro.xlsx");  // Retorna el archivo Excel
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Libro.xlsx");
+                }
             }
+            
         }
     }
 }
