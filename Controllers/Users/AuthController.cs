@@ -39,7 +39,7 @@ namespace Backend.Controllers.Users
                 var token = _userService.GenerateAuthToken(user);
 
                 // Retorna un estado de éxito 200 con el token de autenticación
-                return StatusCode(200, new { Message = "Access valid", Token = token, DateTime.UtcNow, StatusCode = 200 });
+                return StatusCode(200, new { Message = "Access valid", Token = token, DateTime.UtcNow, Rol = user.Role, StatusCode = 200 });
             }
             catch (Exception ex)
             {

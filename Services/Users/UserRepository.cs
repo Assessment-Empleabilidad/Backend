@@ -41,7 +41,7 @@ namespace Backend.Services.Users
                 var auth = passCompare.VerifyPassword(user.Password, password);
                 if (auth)
                 {
-                    return user; // Devuelve el usuario si la autenticación es exitosa
+                     return user; // Devuelve el usuario si la autenticación es exitosa
                 }
             }
             return null; // Devuelve null si el usuario no se encuentra o la contraseña no es correcta
@@ -70,7 +70,7 @@ namespace Backend.Services.Users
                     Name = user.Name,
                     Email = user.Email,
                     Password = user.Password,
-                    Role = "User",
+                    Role = user.Role,
                     DateCreate = DateTime.Now
                 };
 
@@ -98,7 +98,7 @@ namespace Backend.Services.Users
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Role),
+                new Claim(ClaimTypes.Role, user.Role), 
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 
@@ -114,5 +114,6 @@ namespace Backend.Services.Users
             // Devuelve el token JWT como una cadena
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
     }
 }

@@ -1,6 +1,8 @@
 
+using System.Security.Claims;
 using Backend.Models;
 using Backend.Services.Books;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers.Books
@@ -15,12 +17,31 @@ namespace Backend.Controllers.Books
             _bookRepository = bookRepository;
         }
 
+
+
         // Acción para obtener todos los libros
         [HttpGet]
         [Route("api/books")]
-        public IEnumerable<Book> GetBooks()
+        [Authorize]
+        public IActionResult GetBooks()
         {
-            return _bookRepository.GetAll();  // Retorna todos los libros del repositorio
+            // Obtener el rol del usuario desde los claims del JWT
+            var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+            if (userRole == null)
+            {
+                return Unauthorized("User role not found.");
+            }
+
+            try
+            {
+                var books = _bookRepository.GetAll(userRole);
+                return Ok(books);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
 
         // Acción para obtener un libro por su ID
@@ -29,7 +50,7 @@ namespace Backend.Controllers.Books
         public IActionResult GetBook(int id)
         {
             var book = _bookRepository.GetById(id);  // Obtiene el libro por su ID
-            if (book == null)
+            if  (book == null)
             {
                 return NotFound("El Libro No Existe");  // Retorna un 404 si el libro no existe
             }
