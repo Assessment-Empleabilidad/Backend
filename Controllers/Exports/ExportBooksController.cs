@@ -20,7 +20,7 @@ namespace BackEnd.Controllers
         // Acción para exportar libros a un archivo PDF
         [HttpGet]
         [Route("api/export/books/pdf")]
-        public IActionResult ExportPDF(int id)
+        public IActionResult ExportPDF()
         {
             MemoryStream workStream = new MemoryStream();  // Crea un flujo de memoria
             Document document = new Document();  // Crea un nuevo documento PDF
@@ -34,7 +34,12 @@ namespace BackEnd.Controllers
             var titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 20, Font.NORMAL, BaseColor.BLACK);
             var boldFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12, Font.NORMAL, BaseColor.WHITE);
 
-            var books = _context.Books.ToList();  // Obtiene la lista de libros
+            var books = _context.Books.ToList();
+
+            if (books == null || books.Count == 0)
+            {
+                return NotFound("No se encontraron libros");
+            }
 
             // Agrega el título del documento
             Paragraph title = new Paragraph("Libros", titleFont)
@@ -64,7 +69,7 @@ namespace BackEnd.Controllers
                 table.AddCell(book.Title);
                 table.AddCell(book.Author);
                 table.AddCell(book.Genre);
-                table.AddCell(book.PublicationDate.ToString());
+                table.AddCell(book.PublicationDate.ToString("yyyy/MM/dd"));
                 table.AddCell(book.Status);
             }
 
@@ -86,7 +91,12 @@ namespace BackEnd.Controllers
         [Route("book/export")]
         public async Task<IActionResult> ExportToExcel()
         {
-            var libros = await _context.Books.ToListAsync();  // Obtiene la lista de libros asincrónicamente
+            var libros = await _context.Books.ToListAsync();
+
+            if (libros == null || libros.Count == 0)
+            {
+                return NotFound("No se encontraron libros");
+            }
 
             using (var package = new ExcelPackage())
             {
@@ -109,7 +119,7 @@ namespace BackEnd.Controllers
                     worksheet.Cells[i + 2, 2].Value = libro.Title;
                     worksheet.Cells[i + 2, 3].Value = libro.Author;
                     worksheet.Cells[i + 2, 4].Value = libro.Genre;
-                    worksheet.Cells[i + 2, 5].Value = libro.PublicationDate.ToString("yyyy-MM-dd");
+                    worksheet.Cells[i + 2, 5].Value = libro.PublicationDate.ToString("yyyy/MM/dd");
                     worksheet.Cells[i + 2, 6].Value = libro.CopiesAvailable;
                     worksheet.Cells[i + 2, 7].Value = libro.Status;
                 }

@@ -65,9 +65,9 @@ namespace BackEnd.Controllers
                 table.AddCell(loan.Id.ToString());
                 table.AddCell(loan.Book.Title);
                 table.AddCell(loan.Book.Status);
-                table.AddCell(loan.CreationDate.ToString());
-                table.AddCell(loan.LoanDate.ToString());
-                table.AddCell(loan.ReturnDate.ToString());
+                table.AddCell(loan.CreationDate.ToString("yyyy/MM/dd"));
+                table.AddCell(loan.LoanDate.ToString("yyyy/MM/dd"));
+                table.AddCell(loan.ReturnDate.ToString("yyyy/MM/dd"));
             }
 
             document.Add(table); // Añade la tabla al documento
