@@ -1,6 +1,8 @@
 
+using System.Security.Claims;
 using Backend.Models;
 using Backend.Services.Books;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers.Books
@@ -18,29 +20,47 @@ namespace Backend.Controllers.Books
         // Acción para actualizar un libro por su ID
         [HttpPut]
         [Route("api/books/{id}/update")]
+        [Authorize]
         public IActionResult Update(int id, [FromBody] Book book)
         {
             if (book == null)
             {
-                return BadRequest("El Objeto Libro es nulo");  // Retorna un 400 si el objeto libro es nulo
+                return BadRequest("The book object is null.");
             }
 
-            var existingBook = _bookRepository.GetById(id);  // Obtiene el libro por su ID
+            // Verificar si el libro existe en la base de datos
+            var existingBook = _bookRepository.GetById(id);
             if (existingBook == null)
             {
-                return NotFound("El Libro No Existe");  // Retorna un 404 si el libro no existe
+                return NotFound("Book not found.");
             }
 
-            // Actualiza los campos del libro existente con los valores del libro recibido
-            existingBook.Title = book.Title;
-            existingBook.Author = book.Author;
-            existingBook.Genre = book.Genre;
-            existingBook.PublicationDate = book.PublicationDate;
-            existingBook.CopiesAvailable = book.CopiesAvailable;
-            existingBook.Status = book.Status;
+            // Obtener el rol del usuario desde los claims del JWT
+            var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 
-            _bookRepository.Update(existingBook);  // Actualiza el libro en el repositorio
-            return Ok(new { message = "El Libro Se Ha Actualizado Correctamente" });  // Retorna un mensaje de éxito
+            if (userRole == null)
+            {
+                return Unauthorized("User role not found.");
+            }
+
+            try
+            {
+                // Actualizar las propiedades del libro
+                existingBook.Title = book.Title;
+                existingBook.Author = book.Author;
+                existingBook.Genre = book.Genre;
+                existingBook.PublicationDate = book.PublicationDate;
+                existingBook.CopiesAvailable = book.CopiesAvailable;
+                existingBook.Status = book.Status;
+
+                // Llamar al servicio para actualizar el libro
+                _bookRepository.Update(existingBook, userRole);
+                return Ok(new { message = "The book has been updated successfully." });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
     }
 }
