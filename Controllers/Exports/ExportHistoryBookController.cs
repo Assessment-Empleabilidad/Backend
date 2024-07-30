@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BackEnd.Controllers
 {
-    public class ExportHistoryBookController : Controller
+    public class ExportBookController : Controller
     {
         private readonly BaseContext _context;
-        public ExportHistoryBookController(BaseContext context)
+        public ExportBookController(BaseContext context)
         {
             _context = context;
         }
@@ -74,43 +74,6 @@ namespace BackEnd.Controllers
 
             var fileName = $"Historial de libros de {user.Name}";
             return File(workStream, "application/pdf", fileName);
-        }
-        [HttpGet]
-        [Route("{Id}/export/historybooks/excel")]
-        public async Task<IActionResult> ExportToExcel(int Id)
-        {
-            var libros = await _context.Loans.Include(b => b.Book).ToListAsync();
-
-            using (var package = new ExcelPackage())
-            {
-                var worksheet = package.Workbook.Worksheets.Add("Libros");
-
-                // Agregar encabezados
-                worksheet.Cells[1, 1].Value = "Id Prestamo";
-                worksheet.Cells[1, 2].Value = "Titulo Libro";
-                worksheet.Cells[1, 3].Value = "Estado prestamo";
-                worksheet.Cells[1, 4].Value = "Fecha creacion prestamo";
-                worksheet.Cells[1, 5].Value = "Fecha prestamo";
-                worksheet.Cells[1, 6].Value = "Fecha de retorno prestamo";  // Cambiado el índice de columna
-
-                // Agregar datos
-                for (int i = 0; i < libros.Count; i++)
-                {
-                    var libro = libros[i];
-                    worksheet.Cells[i + 2, 1].Value = libro.Id;                  // Id del préstamo
-                    worksheet.Cells[i + 2, 2].Value = libro.Book.Title;          // Título del libro (asumiendo que `Book` tiene una propiedad `Title`)
-                    worksheet.Cells[i + 2, 3].Value = libro.Status;              // Estado del préstamo
-                    worksheet.Cells[i + 2, 4].Value = libro.CreationDate.ToString("yyyy-MM-dd"); // Fecha de creación del préstamo
-                    worksheet.Cells[i + 2, 5].Value = libro.LoanDate.ToString("yyyy-MM-dd");     // Fecha de préstamo
-                    worksheet.Cells[i + 2, 6].Value = libro.ReturnDate.ToString("yyyy-MM-dd"); // Fecha de retorno del préstamo (usando el operador de null condicional para evitar errores si es null)
-                }
-
-                var stream = new MemoryStream();
-                package.SaveAs(stream);
-                stream.Position = 0;
-
-                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Estudiantes.xlsx");
-            }
         }
     }
 }

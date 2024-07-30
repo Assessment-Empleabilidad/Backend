@@ -3,13 +3,14 @@ using Backend.Data;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 
 namespace BackEnd.Controllers
 {
-    public class ExportBookController : Controller
+    public class ExportBooksController : ControllerBase
     {
         private readonly BaseContext _context;
-        public ExportBookController(BaseContext context)
+        public ExportBooksController(BaseContext context)
         {
             _context = context;
         }
@@ -64,7 +65,7 @@ namespace BackEnd.Controllers
             document.Add(table);
 
             document.Close();
-            
+
             // CONFIG PDF RESULT
             byte[] byteInfo = workStream.ToArray();
             workStream.Write(byteInfo, 0, byteInfo.Length);
@@ -72,6 +73,46 @@ namespace BackEnd.Controllers
 
             var fileName = $"Historial de libros";
             return File(workStream, "application/pdf", fileName);
+        }
+
+        [HttpGet]
+        [Route("book/export")]
+        public async Task<IActionResult> ExportToExcel()
+        {
+            var libros = await _context.Books.ToListAsync();
+
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Libros");
+
+                // Agregar encabezados
+                worksheet.Cells[1, 1].Value = "Id";
+                worksheet.Cells[1, 2].Value = "Titulo Libro";
+                worksheet.Cells[1, 3].Value = "Autor";
+                worksheet.Cells[1, 4].Value = "Genero";
+                worksheet.Cells[1, 5].Value = "Fecha publicacion";
+                worksheet.Cells[1, 6].Value = "Copias disponibles";
+                worksheet.Cells[1, 7].Value = "Estado";
+
+                // Agregar datos
+                for (int i = 0; i < libros.Count; i++)
+                {
+                    var libro = libros[i];
+                    worksheet.Cells[i + 2, 1].Value = libro.Id;
+                    worksheet.Cells[i + 2, 2].Value = libro.Title;
+                    worksheet.Cells[i + 2, 3].Value = libro.Author;
+                    worksheet.Cells[i + 2, 4].Value = libro.Genre;
+                    worksheet.Cells[i + 2, 5].Value = libro.PublicationDate.ToString("yyyy-MM-dd");
+                    worksheet.Cells[i + 2, 6].Value = libro.CopiesAvailable;
+                    worksheet.Cells[i + 2, 7].Value = libro.Status;
+                }
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+                stream.Position = 0;
+
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Libro.xlsx");
+            }
         }
     }
 }
